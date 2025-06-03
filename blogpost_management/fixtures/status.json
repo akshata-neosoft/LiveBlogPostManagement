@@ -1,0 +1,42 @@
+[
+  {
+    "model": "blogpost_management.Status",
+    "pk": 0,
+    "fields": {
+      "value": "Created",
+      "description": "Created"
+    }
+  },
+  {
+    "model": "blogpost_management.Status",
+    "pk": 1,
+    "fields": {
+      "value": "Active",
+      "description": "Active"
+    }
+  },
+  {
+    "model": "blogpost_management.Status",
+    "pk": 2,
+    "fields": {
+      "value": "Deleted",
+      "description": "Deleted"
+    }
+  },
+  {
+    "model": "blogpost_management.Status",
+    "pk": 3,
+    "fields": {
+      "value": "Trashed",
+      "description": "Trashed"
+    }
+  },
+  {
+    "model": "blogpost_management.Status",
+    "pk": 3,
+    "fields": {
+      "value": "Archive",
+      "description": "Trashed"
+    }
+  }
+]
