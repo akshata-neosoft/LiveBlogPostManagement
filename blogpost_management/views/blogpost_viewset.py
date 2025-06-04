@@ -2,23 +2,26 @@ import pytz
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.response import Response
 from datetime import datetime
 from blogpost_management.api_exception import StandardizedException
 from blogpost_management.filters.blogpost_filter import BlogPostFilter
-from blogpost_management.helper_methods import notify_post_author_on_comment, notify_ws_clients
+from blogpost_management.helper_methods import notify_ws_clients, send_follow_notification
 from blogpost_management.models import BlogPostModel, Comment
 from blogpost_management.models.domain_model import Status
 from blogpost_management.pagination import CommonPagination
 from blogpost_management.serializers.blogpost_serializer import BlogPostSerializer, CommentSerializer
+from user_management.models import Users
 from utils.decorators import trace_log
 from utils.logger import service_logger
-from utils.permission import IsAuthenticatedWithSimpleToken
+from utils.permission import SimpleJWTAuthentication, IsAuthenticatedWithSimpleToken
 
 
 class BlogPostViewSet(NestedViewSetMixin, ModelViewSet):
+
     model = BlogPostModel
     permission_classes = [IsAuthenticatedWithSimpleToken]
     serializer_class = BlogPostSerializer
@@ -40,7 +43,7 @@ class BlogPostViewSet(NestedViewSetMixin, ModelViewSet):
     @trace_log
     def create(self, request, *args, **kwargs):
         try:
-            serializer = self.serializer_class(data=request.data)
+            serializer = BlogPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             notify_ws_clients('created', serializer.data)
@@ -125,25 +128,21 @@ class CommentViewSet(NestedViewSetMixin, ModelViewSet):
     @trace_log
     def create(self, request, *args, **kwargs):
         try:
-            serializer = self.serializer_class(data=request.data)
+            print("KKKKKKK")
+            serializer = CommentSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             blog_post = serializer.save()
 
             notify_ws_clients('comment added', serializer.data)
-            # Prepare notification
-            message = f"Your blog post '{blog_post.title}' has been created successfully."
-            target_url = f"/blogs/{blog_post.id}/"  # Adjust as per your frontend route
-            recipient_id = blog_post.author.id  # Assuming the author is set in serializer or request
-
-            # Call the notification function
-            # create_notification(recipient_id, message, target_url)
-
+            blog = BlogPostModel.objects.filter(id=request.data.get('blog_post')).first()
+            post_owner = Users.objects.filter(id=str(blog.author.id)).first()
+            send_follow_notification(post_owner,blog)
             return Response({
                 "success": True,
-                "message": "Blog Post Created Successfully"
+                "message": "Comment Added on Post Successfully"
             }, status=status.HTTP_201_CREATED)
 
-            return Response({"success":True,"message":"Blog Post Created Successfully"}, status=status.HTTP_201_CREATED)
+            # return Response({"success":True,"message":"Blog Post Created Successfully"}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             service_logger.error(str(e))

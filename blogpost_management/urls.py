@@ -1,7 +1,7 @@
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 from django.urls import path, include
 
-from blogpost_management.views.blogpost_viewset import BlogPostViewSet
+from blogpost_management.views.blogpost_viewset import BlogPostViewSet, CommentViewSet
 from django.urls import re_path
 
 from utils import consumer
@@ -10,8 +10,8 @@ from utils import consumer
 
 router = ExtendedDefaultRouter(trailing_slash=False)
 
-router.register(r'blog', BlogPostViewSet, basename='blog')
-
+router.register(r'blogposts', BlogPostViewSet, basename='blogposts')
+router.register(r'comment', CommentViewSet, basename='comment')
 urlpatterns = [
     path('', include(router.urls)),
 

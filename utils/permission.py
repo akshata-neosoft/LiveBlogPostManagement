@@ -1,3 +1,9 @@
+from rest_framework.authentication import BaseAuthentication
+# from rest_framework.exceptions import AuthenticationFailed
+# from django.conf import settings
+# import jwt
+# from user_management.models import Users
+
 import jwt
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import AuthenticationFailed
@@ -33,3 +39,29 @@ class IsAuthenticatedWithSimpleToken(BasePermission):
         # Attach user to request if needed
         request.user = user
         return True
+
+
+class SimpleJWTAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        auth_header = request.headers.get('Authorization')
+
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return None  # Let other authenticators try, or return AnonymousUser
+
+        token = auth_header.split(' ')[1]
+
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Token has expired.")
+        except jwt.InvalidTokenError:
+            raise AuthenticationFailed("Invalid token.")
+
+        try:
+            user = Users.objects.get(id=payload['user_id'], email_id=payload['email'])
+        except Users.DoesNotExist:
+            raise AuthenticationFailed("User not found.")
+
+        return (user, token)
+
+

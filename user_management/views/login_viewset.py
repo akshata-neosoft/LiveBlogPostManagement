@@ -1,10 +1,12 @@
-# user_management/views/login_viewset.py
+
 
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes, authentication_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from blogpost_management.api_exception import StandardizedException
 from user_management.models import Users
@@ -15,7 +17,7 @@ from utils.helper_methods import (
     validate_email,
     validate_password,
 )
-from utils.permission import IsAuthenticatedWithSimpleToken
+from utils.permission import SimpleJWTAuthentication
 from utils.token import create_token
 from utils.logger import service_logger
 from django.conf import settings
@@ -26,7 +28,12 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = UserSerializer
     queryset = Users.objects.all()
 
-    @action(detail=False, methods=['post'])
+    def get_permissions(self):
+        if self.action in ('sign_up','login'):
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    @action(detail=False, methods=['post'],url_path='login')
     def login(self, request, *args, **kwargs):
         """
         Handle user login and return JWT token if successful.
@@ -60,6 +67,7 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
 
             token = create_token(user.id, user.email_id)
 
+
             return Response(
                 {
                     "success": True,
@@ -74,6 +82,20 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
                 },
                 status=status.HTTP_200_OK,
             )
+            # return Response(
+            #     {
+            #         "success": True,
+            #         "message": "Login successful",
+            #         "data": {
+            #             "token": token,
+            #             "email_id": user.email_id,
+            #             "user_id": user.id,
+            #             "first_name": user.first_name,
+            #             "last_name": user.last_name,
+            #         },
+            #     },
+            #     status=status.HTTP_200_OK,
+            # )
 
         except Exception as e:
             service_logger.error(f"Login error: {str(e)}")
@@ -82,7 +104,9 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'],url_path='sign_up')
+    # @permission_classes([AllowAny])
+    # @authentication_classes([])
     def sign_up(self, request, *args, **kwargs):
         """
         Register a new user after validating all fields.
@@ -153,26 +177,26 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-class ProfileViewSet(NestedViewSetMixin, ModelViewSet):
-    model = Users
-    serializer_class = UserSerializer
-    queryset = Users.objects.all()
-    permission_classes = [IsAuthenticatedWithSimpleToken]
-
-    @trace_log
-    def update(self, request, *args, **kwargs):
-        try:
-            kwargs['partial'] = False
-            obj = self.get_object()
-            serializer = self.serializer_class(obj, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            response_data = self.serializer_class(obj).data
-            return Response({"Success": True, "message": "Blog Post Updated Successfully",
-                             "data": response_data}, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            service_logger.error(str(e))
-            raise StandardizedException(error_status=True,
-                                        error_obj=e,
-                                        status_code=status.HTTP_400_BAD_REQUEST)
+# class ProfileViewSet(NestedViewSetMixin, ModelViewSet):
+#     model = Users
+#     serializer_class = UserSerializer
+#     queryset = Users.objects.all()
+#     permission_classes = [IsAuthenticatedWithSimpleToken]
+#
+#     @trace_log
+#     def update(self, request, *args, **kwargs):
+#         try:
+#             kwargs['partial'] = False
+#             obj = self.get_object()
+#             serializer = self.serializer_class(obj, data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
+#             response_data = self.serializer_class(obj).data
+#             return Response({"Success": True, "message": "Blog Post Updated Successfully",
+#                              "data": response_data}, status=status.HTTP_200_OK)
+#
+#         except Exception as e:
+#             service_logger.error(str(e))
+#             raise StandardizedException(error_status=True,
+#                                         error_obj=e,
+#                                         status_code=status.HTTP_400_BAD_REQUEST)

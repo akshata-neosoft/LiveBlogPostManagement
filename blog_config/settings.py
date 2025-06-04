@@ -180,8 +180,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'utils.permission.SimpleJWTAuthentication',
     ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     )
@@ -266,5 +269,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'akshata.jagatap01@gmail.com'
-EMAIL_HOST_PASSWORD = 'Akshata@123'
-DEFAULT_FROM_EMAIL = 'Blog <your_email@gmail.com>'
+EMAIL_HOST_PASSWORD = 'uilh hwha rtbg mhgd'
+DEFAULT_FROM_EMAIL = 'Blog <akshata.jagatap01@gmail.com>'

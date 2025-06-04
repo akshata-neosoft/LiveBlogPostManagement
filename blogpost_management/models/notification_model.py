@@ -1,13 +1,13 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 
 from blogpost_management.models import CommonFields
+from user_management.models import Users
 
-User = get_user_model()
 
 class Notification(CommonFields):
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    recipient = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='notifications')
     message = models.TextField()
+    event_type = models.CharField(max_length=100,null=True,blank=True)
     is_read = models.BooleanField(default=False)
 
     class Meta:

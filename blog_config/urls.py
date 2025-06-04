@@ -22,4 +22,8 @@ urlpatterns = [
     path('v1/', include('user_management.urls')),
 ]
 
+# websocket_urlpatterns = [
+#     re_path(r'ws/live-blogs/$', consumer.BlogPostConsumer.as_asgi()),
+# ]
+
 

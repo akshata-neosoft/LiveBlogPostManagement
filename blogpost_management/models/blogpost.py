@@ -21,6 +21,7 @@ class BlogPostModel(CommonFields):
                                    help_text="Short summary or description of the blog post.")
     category = models.CharField(max_length=100, null=True, blank=True,
                                 help_text="Category or tag to classify the blog post (e.g., Tech, Lifestyle, News).")
+    event_status = models.CharField(max_length=50, choices=[("Ongoing", "Ongoing"), ("Ended", "Ended")])
 
     class Meta:
         db_table = 'blogpost_table'
