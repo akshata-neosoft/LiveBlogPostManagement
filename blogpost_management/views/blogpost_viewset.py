@@ -17,7 +17,7 @@ from blogpost_management.serializers.blogpost_serializer import BlogPostSerializ
 from user_management.models import Users
 from utils.decorators import trace_log
 from utils.logger import service_logger
-from utils.permission import SimpleJWTAuthentication, IsAuthenticatedWithSimpleToken
+from utils.permission import IsAuthenticatedWithSimpleToken
 
 
 class BlogPostViewSet(NestedViewSetMixin, ModelViewSet):

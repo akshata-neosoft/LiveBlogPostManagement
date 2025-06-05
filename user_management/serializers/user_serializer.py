@@ -7,8 +7,8 @@ from user_management.models import Users
 class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(allow_null=True, allow_blank=True, )
     last_name = serializers.CharField(allow_null=True, allow_blank=True)
-    email_id = serializers.EmailField()
-    password = serializers.CharField(allow_blank=True, allow_null=True)
+    email_id = serializers.EmailField(required=False)
+    password = serializers.CharField(allow_blank=True, allow_null=True,required=False)
 
     @transaction.atomic
     def create(self, validated_data):

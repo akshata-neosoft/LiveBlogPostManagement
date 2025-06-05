@@ -1,23 +1,21 @@
 
 
 from rest_framework import status
-from rest_framework.decorators import action, permission_classes, authentication_classes
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from blogpost_management.api_exception import StandardizedException
 from user_management.models import Users
 from user_management.serializers.user_serializer import UserSerializer
-from utils.decorators import trace_log
+
 from utils.helper_methods import (
     hash_string_with_secret_key,
     validate_email,
     validate_password,
 )
-from utils.permission import SimpleJWTAuthentication
+
 from utils.token import create_token
 from utils.logger import service_logger
 from django.conf import settings
@@ -177,26 +175,3 @@ class LoginViewSet(NestedViewSetMixin, ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-# class ProfileViewSet(NestedViewSetMixin, ModelViewSet):
-#     model = Users
-#     serializer_class = UserSerializer
-#     queryset = Users.objects.all()
-#     permission_classes = [IsAuthenticatedWithSimpleToken]
-#
-#     @trace_log
-#     def update(self, request, *args, **kwargs):
-#         try:
-#             kwargs['partial'] = False
-#             obj = self.get_object()
-#             serializer = self.serializer_class(obj, data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             serializer.save()
-#             response_data = self.serializer_class(obj).data
-#             return Response({"Success": True, "message": "Blog Post Updated Successfully",
-#                              "data": response_data}, status=status.HTTP_200_OK)
-#
-#         except Exception as e:
-#             service_logger.error(str(e))
-#             raise StandardizedException(error_status=True,
-#                                         error_obj=e,
-#                                         status_code=status.HTTP_400_BAD_REQUEST)
