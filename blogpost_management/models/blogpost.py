@@ -29,6 +29,8 @@ class BlogPostModel(CommonFields):
 
 
 class Comment(CommonFields):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True,
+                          help_text="Unique identifier for the comment.")
     blog_post = models.ForeignKey(to=BlogPostModel, on_delete=models.CASCADE, related_name='comments',
                                help_text="Blog Post on which comment will be added")
     user = models.ForeignKey(to=Users, on_delete=models.CASCADE, related_name='c_user',

@@ -75,7 +75,8 @@ class BlogPostViewSet(NestedViewSetMixin, ModelViewSet):
     @trace_log
     def list(self, request, *args, **kwargs):
         try:
-            queryset = self.filter_queryset(self.get_queryset())
+            user_id = request.query_params.get('user_id')
+            queryset = BlogPostModel.objects.filter(author=user_id).exclude(status=2)
             page = self.paginate_queryset(queryset)
             serializer = BlogPostSerializer(page, many=True)
             return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
@@ -128,21 +129,22 @@ class CommentViewSet(NestedViewSetMixin, ModelViewSet):
     @trace_log
     def create(self, request, *args, **kwargs):
         try:
-            print("KKKKKKK")
+
             serializer = CommentSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            blog_post = serializer.save()
+            comment = serializer.save()
 
             notify_ws_clients('comment added', serializer.data)
             blog = BlogPostModel.objects.filter(id=request.data.get('blog_post')).first()
             post_owner = Users.objects.filter(id=str(blog.author.id)).first()
             send_follow_notification(post_owner,blog)
+            response_serializer = CommentSerializer(comment)
+
             return Response({
                 "success": True,
-                "message": "Comment Added on Post Successfully"
+                "message": "Comment Added on Post Successfully",
+                "data": response_serializer.data
             }, status=status.HTTP_201_CREATED)
-
-            # return Response({"success":True,"message":"Blog Post Created Successfully"}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             service_logger.error(str(e))
@@ -172,7 +174,13 @@ class CommentViewSet(NestedViewSetMixin, ModelViewSet):
         try:
             blog_id = request.query_params.get('blog_id')
             user_id = request.query_params.get('user_id')
-            queryset = Comment.objects.filter(blog_post=blog_id,user=user_id).exclude(status=2)
+            queryset = Comment.objects.exclude(status=2)
+
+            if blog_id:
+                queryset = queryset.filter(blog_post=blog_id)
+            if user_id:
+                queryset = queryset.filter(user=user_id)
+
             page = self.paginate_queryset(queryset)
             serializer = CommentSerializer(page, many=True)
             return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)

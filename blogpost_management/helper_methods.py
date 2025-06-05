@@ -20,8 +20,7 @@ def notify_user(user, message, event_type="info", related_object=None):
     Notification.objects.create(
         recipient=recipent_obj,
         message=message,
-        event_type=event_type,
-        # related_object=related_object
+        event_type=event_type
     )
 
 def notify_ws_clients(event_type, blog_data):

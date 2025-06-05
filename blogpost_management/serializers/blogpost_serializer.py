@@ -37,7 +37,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CommentSerializer(serializers.Serializer):
+class CommentSerializer(serializers.ModelSerializer):
     blog_post = serializers.PrimaryKeyRelatedField(
         queryset=BlogPostModel.objects.all().exclude(status=2),
         error_messages={'does_not_exist': 'Invalid Blog provided.',
@@ -49,10 +49,7 @@ class CommentSerializer(serializers.Serializer):
 
     @transaction.atomic
     def create(self, validated_data):
-
         obj = Comment.objects.create(**validated_data)
-        print("VD >>>", validated_data)
-        print("BlogPostModel object >>", validated_data.get("blog_post"))
         return obj
 
     @transaction.atomic

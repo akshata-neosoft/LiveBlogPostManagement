@@ -264,10 +264,10 @@ LOGGING = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'akshata.jagatap01@gmail.com'
-EMAIL_HOST_PASSWORD = 'uilh hwha rtbg mhgd'
-DEFAULT_FROM_EMAIL = 'Blog <akshata.jagatap01@gmail.com>'
+EMAIL_BACKEND = Env.email_backend
+EMAIL_HOST = Env.email_host
+EMAIL_PORT = Env.email_port
+EMAIL_USE_TLS = Env.email_use_tls
+EMAIL_HOST_USER = Env.email_host_user
+EMAIL_HOST_PASSWORD = Env.email_host_password
+DEFAULT_FROM_EMAIL = Env.default_from_email
