@@ -6,7 +6,6 @@ from django.urls import re_path
 
 from utils import consumer
 
-# from blogpost_management.views.blogpost_views import BlogPostViewSet
 
 router = ExtendedDefaultRouter(trailing_slash=False)
 
