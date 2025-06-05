@@ -11,7 +11,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from django.core.mail import send_mail
-
+from utils.tasks import send_follow_notification_task
 
 
 
@@ -48,6 +48,7 @@ def notify_user_on_comment(sender, instance, created, **kwargs):
 
 
 def send_follow_notification(to_user, post):
+    send_follow_notification_task.delay(to_user.email_id, post.title)
     send_mail(
         subject="New Post Update",
         message=f"The post '{post.title}' has been updated.",

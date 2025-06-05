@@ -16,10 +16,6 @@ class EnvironmentConfigs:
     dbUser = configs['DATABASE']['dbUser']
     dbPassword = configs['DATABASE']['dbPassword']
 
-    """Communication salt"""
-    internal_salt = configs['INTERNAL']['INTERNAL_SALT']
-    internal_pass = configs['INTERNAL']['INTERNAL_PASS']
-
     """Redis"""
     layer = configs['REDIS']['layer']
     layer_password = configs['REDIS']['layer_password']
@@ -34,6 +30,12 @@ class EnvironmentConfigs:
     email_host_user = configs['EMAIL']['EMAIL_HOST_USER']
     email_host_password = configs['EMAIL']['EMAIL_HOST_PASSWORD']
     default_from_email = configs['EMAIL']['DEFAULT_FROM_EMAIL']
+
+    """Celery"""
+    celery_broker_url = 'redis://localhost:6379/0'
+    celery_result_backend = 'redis://localhost:6379/0'
+    celery_accept_token = ['json']
+    celery_task_serializer = 'json'
 
 
 

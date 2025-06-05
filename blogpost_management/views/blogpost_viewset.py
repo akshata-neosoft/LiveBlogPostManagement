@@ -138,6 +138,7 @@ class CommentViewSet(NestedViewSetMixin, ModelViewSet):
             blog = BlogPostModel.objects.filter(id=request.data.get('blog_post')).first()
             post_owner = Users.objects.filter(id=str(blog.author.id)).first()
             send_follow_notification(post_owner,blog)
+
             response_serializer = CommentSerializer(comment)
 
             return Response({

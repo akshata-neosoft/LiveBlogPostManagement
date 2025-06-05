@@ -271,3 +271,8 @@ EMAIL_USE_TLS = Env.email_use_tls
 EMAIL_HOST_USER = Env.email_host_user
 EMAIL_HOST_PASSWORD = Env.email_host_password
 DEFAULT_FROM_EMAIL = Env.default_from_email
+
+CELERY_BROKER_URL = Env.celery_broker_url
+CELERY_RESULT_BACKEND = Env.celery_result_backend
+CELERY_ACCEPT_CONTENT = Env.celery_accept_token
+CELERY_TASK_SERIALIZER = Env.celery_task_serializer

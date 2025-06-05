@@ -17,7 +17,6 @@ class BlogPostConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        # Usually you don't handle receiving on client -> server side in this use case
         pass
 
     async def blog_post_event(self, event):
